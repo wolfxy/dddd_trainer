@@ -89,14 +89,14 @@ class Train:
         self.now_time = time.time()
 
     def start(self):
-        logger.index('Starting, prepare for var iter.')
+        logger.info('Starting, prepare for var iter.')
         val_iter = iter(self.val)
-        logger.index('Starting, prepare for train data.')
+        logger.info('Starting, prepare for train data.')
         train_data = []
         for idx, (inputs, labels, labels_length) in enumerate(self.train):
             train_data.append((inputs, labels, labels_length))
             logger.info(idx)
-        logger.index('Train data load')
+        logger.info('Train data load')
         while True:
             for (inputs, labels, labels_length) in train_data:              
                 self.now_time = time.time()              

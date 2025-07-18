@@ -115,6 +115,8 @@ class GetLoader:
 
         self.val_batch_size = self.conf['Train']['TEST_BATCH_SIZE']
 
+        self.num_workers = 0
+
         logger.info("\nImage Path is {}".format(self.path))
 
         self.transform_list = []
@@ -138,9 +140,9 @@ class GetLoader:
             self.val_batch_size = len(val_loader)
         self.loaders = {
             'train': DataLoader(dataset=train_loader, batch_size=self.batch_size, shuffle=True, drop_last=True,
-                                num_workers=0, collate_fn=self.collate_to_sparse),
+                                num_workers=self.num_workers, collate_fn=self.collate_to_sparse, pin_memory=True),
             'val': DataLoader(dataset=val_loader, batch_size=self.val_batch_size, shuffle=True, drop_last=True,
-                              num_workers=0, collate_fn=self.collate_to_sparse),
+                              num_workers=self.num_workers, collate_fn=self.collate_to_sparse, pin_memory=True),
         }
         del val_loader
         del train_loader

@@ -71,12 +71,9 @@ class Train:
         logger.info("\nBuilding Net...")
         self.net = Net(self.conf, self.lr)
         if self.state_dict:
-            self.net.load_state_dict(self.state_dict)
+            self.net.load_state_dict(self.state_dict, strict=False)
         logger.info(self.net)
         logger.info("\nBuilding End")
-
-
-
         self.net = self.net.to(self.device)
         logger.info("\nGet Data Loader...")
 
@@ -92,24 +89,27 @@ class Train:
         self.now_time = time.time()
 
     def start(self):
+        logger.index('Starting, prepare for var iter.')
         val_iter = iter(self.val)
+        logger.index('Starting, prepare for train data.')
+        train_data = []
+        for idx, (inputs, labels, labels_length) in enumerate(self.train):
+            train_data.append((inputs, labels, labels_length))
+            logger.info(idx)
+        logger.index('Train data load')
         while True:
-            for idx, (inputs, labels, labels_length) in enumerate(self.train):
-                self.now_time = time.time()
-                inputs = self.net.variable_to_device(inputs, device=self.device)
-
+            for (inputs, labels, labels_length) in train_data:              
+                self.now_time = time.time()              
+                inputs = self.net.variable_to_device(inputs, device=self.device)              
                 loss, lr = self.net.trainer(inputs, labels, labels_length)
-
                 self.avg_loss += loss
-
                 self.step += 1
-
                 if self.step % 100 == 0 and self.step % self.test_step != 0:
                     logger.info("{}\tEpoch: {}\tStep: {}\tLastLoss: {}\tAvgLoss: {}\tLr: {}".format(
                         time.strftime("[%Y-%m-%d-%H_%M_%S]", time.localtime(self.now_time)), self.epoch, self.step,
                         str(loss), str(self.avg_loss / 100), lr
                     ))
-                    self.avg_loss = 0
+                    self.avg_loss = 0                
                 if self.step % self.save_checkpoints_step == 0 and self.step != 0:
                     model_path = os.path.join(self.checkpoints_path, "checkpoint_{}_{}_{}.tar".format(
                         self.project_name, self.epoch, self.step,
@@ -159,7 +159,6 @@ class Train:
                         logger.info("\nExport Finished!Using Time: {}min".format(
                             str(int(int(self.now_time) - int(self.start_time)) / 60)))
                         exit()
-
             self.epoch += 1
 
 

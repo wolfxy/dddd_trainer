@@ -115,7 +115,7 @@ class GetLoader:
 
         self.val_batch_size = self.conf['Train']['TEST_BATCH_SIZE']
 
-        self.num_workers = 0
+        self.num_workers = self.conf['Train']['NUM_WORKERS']
 
         logger.info("\nImage Path is {}".format(self.path))
 

@@ -39,10 +39,10 @@ class Config(object):
                     "Epoch": 20,
                     "Cost": 0.05
                 },
-                "LR": 0.01
+                "LR": 0.01,
+                "NUM_WORKERS": 0
             }
         }
-
 
     def make_config(self, config_dict=None, single: bool = False):
         if not config_dict:

@@ -1,10 +1,6 @@
 import json
 import os
-import random
 import time
-
-import tqdm
-
 from configs import Config
 from loguru import logger
 from utils import load_cache
@@ -59,7 +55,7 @@ class Train:
                 if int(checkpoint_name[3]) > history_step:
                     newer_checkpoint = checkpoint
                     history_step = int(checkpoint_name[3])
-            param, self.state_dict, self.optimizer= Net.load_checkpoint(
+            param, self.state_dict, self.optimizer = Net.load_checkpoint(
                 os.path.join(self.checkpoints_path, newer_checkpoint), self.device)
             self.epoch, self.step, self.lr = param['epoch'], param['step'], param['lr']
             self.epoch += 1

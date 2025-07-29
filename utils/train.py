@@ -88,13 +88,8 @@ class Train:
         logger.info('Starting, prepare for var iter.')
         val_iter = iter(self.val)
         logger.info('Starting, prepare for train data.')
-        train_data = []
-        for idx, (inputs, labels, labels_length) in enumerate(self.train):
-            train_data.append((inputs, labels, labels_length))
-            logger.info(idx)
-        logger.info('Train data load')
         while True:
-            for (inputs, labels, labels_length) in train_data:              
+            for idx, (inputs, labels, labels_length) in enumerate(self.train):        
                 self.now_time = time.time()              
                 inputs = self.net.variable_to_device(inputs, device=self.device)              
                 loss, lr = self.net.trainer(inputs, labels, labels_length)

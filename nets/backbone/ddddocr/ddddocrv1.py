@@ -49,11 +49,13 @@ class DdddOcr(nn.Module):
     def forward(self, input):
         return self.cnn(input)
 
+
 def test():
     net = DdddOcr(1)
     x = torch.randn(1, 1, 128, 128)
     y = net(x)
     print(y.size())
+
 
 if __name__ == '__main__':
     test()

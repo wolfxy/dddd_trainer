@@ -55,8 +55,6 @@ class Net(torch.nn.Module):
             raise Exception("{} is not found in backbones! backbone list : {}".format(self.backbone, json.dumps(
                 list(self.backbones_list.keys()))))
         self.paramters.append({'params': self.cnn.parameters()})
-
-
         if not self.word:
             self.dropout = self.conf['Train']['DROPOUT']
             self.lstm = torch.nn.LSTM(input_size=self.out_size, hidden_size=self.out_size, bidirectional=True,
@@ -75,7 +73,7 @@ class Net(torch.nn.Module):
 
         self.paramters.append({'params': self.fc.parameters()})
 
-        if lr == None:
+        if lr is None:
             self.lr = self.conf['Train']['LR']
         else:
             self.lr = lr
@@ -91,7 +89,6 @@ class Net(torch.nn.Module):
                 list(self.optimizers_list.keys()))))
 
         self.scheduler = torch.optim.lr_scheduler.ExponentialLR(self.optimizer, gamma=0.98)
-
 
     def forward(self, inputs):
         predict = self.get_features(inputs)
@@ -216,7 +213,6 @@ class Net(torch.nn.Module):
         torch.onnx.export(net, dummy_input, graph_path, export_params=True, verbose=False,
                           input_names=input_names, output_names=output_names, dynamic_axes=dynamic_ax,
                           opset_version=12, do_constant_folding=True)
-
 
     @staticmethod
     def load_checkpoint(path, device):

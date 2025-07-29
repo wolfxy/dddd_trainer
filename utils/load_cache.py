@@ -27,6 +27,9 @@ class LoadCache(Dataset):
         with open(self.cache_path, 'r', encoding='utf-8') as f:
             self.caches = f.readlines()
         self.caches_num = len(self.caches)
+        self.data_cache: dict = dict()
+        for i in range(self.caches_num):
+            self.__getitem__(i)
         logger.info("\nRead Cache File End! Caches Num is {}.".format(self.caches_num))
 
     def __len__(self):
@@ -34,6 +37,9 @@ class LoadCache(Dataset):
 
     def __getitem__(self, idx):
         try:
+            data = self.data_cache.get(idx)
+            if data is not None:
+                return data
             data = self.caches[idx]
             data = data.replace("\r", "").replace("\n", "").split("\t")
             image_name = data[0]
@@ -61,7 +67,8 @@ class LoadCache(Dataset):
             else:
                 image = image.resize((width, height))
             label = [int(self.charset.index(item)) for item in list(image_label)]
-            return image, label
+            self.data_cache[idx] = (image, label)
+            return (image, label)
 
         except Exception as e:
             logger.error("\nError: {}, File: {}".format(str(e), self.caches[idx].split("\t")[0]))

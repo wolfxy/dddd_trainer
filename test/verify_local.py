@@ -6,8 +6,8 @@ import os
 m_dir = "E:\\Project\\Lifting\\dddd_trainer\\projects\\vcode_0\\models"
 name = 'vcode_0_1.0_23_6000_2025-07-28-19-47-18.onnx'
 
-m_dir = "D:\\Users\\wuquancheng\\Desktop\\vcode_3"
-name = 'vcode_3_1.0_65_15000_2025-07-29-16-13-21.onnx'
+m_dir = "D:\\Users\\wuquancheng\\Desktop\\vcode_4"
+name = 'vcode_4_1.0_3824_2295000_2025-07-31-23-20-10.onnx'
 
 import_onnx_path = os.path.join(m_dir, name)
 charsets_path = os.path.join(m_dir, 'charsets.json')

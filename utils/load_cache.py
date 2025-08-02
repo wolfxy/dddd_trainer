@@ -162,7 +162,8 @@ class GetLoader:
         for n, (img, seq) in enumerate(batch):
             if img is None or seq is None:
                 continue
-            if len(seq) == 0: continue
+            if len(seq) == 0: 
+                continue
             if max_width < img.size[0]:
                 max_width = img.size[0]
             values.extend(seq)

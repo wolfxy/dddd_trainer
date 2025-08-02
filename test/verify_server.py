@@ -1,7 +1,7 @@
 import requests
 import base64
 import os
-d = r'D:\\Users\\wuquancheng\\Downloads\\打码正常'
+d = r'D:\\Users\\wuquancheng\\Desktop\\vcode_0\\image_set'
 
 error_count = 0
 success_count = 0

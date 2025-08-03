@@ -15,7 +15,7 @@ ocr = ddddocr.DdddOcr(show_ad=False, import_onnx_path=import_onnx_path, charsets
 
 image_dir = os.path.join(m_dir, 'image_set')
 
-# ocr = ddddocr.DdddOcr(show_ad=False)
+# ocr = ddddocr.DdddOcr(show_ad=False) 
 
 # # image = open('img/5.jpg', 'rb').read()
 
@@ -37,4 +37,4 @@ for filename in os.listdir(image_dir):
         print(filename, result, 'error')
         error_count = error_count + 1
     
-print('Error count: ', error_count, 'Success count:', success_count, 'Total count:', error_count + success_count, 'Success Rate:', success_count / (success_count + error_count))
+print('Error count:', error_count, 'Success count:', success_count, 'Total count:', error_count + success_count, 'Success Rate:', success_count / (success_count + error_count))

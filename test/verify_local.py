@@ -29,6 +29,7 @@ for filename in os.listdir(image_dir):
     image = open(image, 'rb').read()
     result = ocr.classification(image)
     
+    
     if result.lower() == code.lower():
         # print(filename, result, 'ok')
         success_count = success_count + 1

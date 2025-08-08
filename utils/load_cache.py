@@ -28,8 +28,8 @@ class LoadCache(Dataset):
             self.caches = f.readlines()
         self.caches_num = len(self.caches)
         self.data_cache: dict = dict()
-        for i in range(self.caches_num):
-            self.__getitem__(i)
+        # for i in range(self.caches_num):
+        #     self.__getitem__(i)
         logger.info("\nRead Cache File End! Caches Num is {}.".format(self.caches_num))
 
     def __len__(self):
@@ -67,6 +67,7 @@ class LoadCache(Dataset):
             else:
                 image = image.resize((width, height))
             label = [int(self.charset.index(item)) for item in list(image_label)]
+            image.save(f'{idx}_{label}_{image_name}')
             self.data_cache[idx] = (image, label)
             return (image, label)
 
@@ -80,6 +81,7 @@ class GetLoader:
         self.project_name = project_name
         self.project_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "projects",
                                          project_name)
+        self.images_cache = os.path.join(self.project_path, "imagescache")
         if os.path.exists(self.project_path):
             self.cache_path = os.path.join(self.project_path, "cache")
             if os.path.exists(self.cache_path):
@@ -147,9 +149,9 @@ class GetLoader:
             self.val_batch_size = len(val_loader)
         self.loaders = {
             'train': DataLoader(dataset=train_loader, batch_size=self.batch_size, shuffle=True, drop_last=True,
-                                num_workers=self.num_workers, collate_fn=self.collate_to_sparse, pin_memory=True),
+                                num_workers=self.num_workers, collate_fn=self.collate_to_sparse, pin_memory=False),
             'val': DataLoader(dataset=val_loader, batch_size=self.val_batch_size, shuffle=True, drop_last=True,
-                              num_workers=self.num_workers, collate_fn=self.collate_to_sparse, pin_memory=True),
+                              num_workers=self.num_workers, collate_fn=self.collate_to_sparse, pin_memory=False),
         }
         del val_loader
         del train_loader

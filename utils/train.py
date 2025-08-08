@@ -142,8 +142,7 @@ class Train:
                         self.net.export_onnx(self.net, dummy_input,
                                              os.path.join(self.models_path, "{}_{}_{}_{}_{}.onnx".format(
                                                  self.project_name, str(accuracy), self.epoch, self.step,
-                                                 time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime(self.now_time))))
-                                             , input_names, output_names, dynamic_ax)
+                                                 time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime(self.now_time)))), input_names, output_names, dynamic_ax)
                         with open(os.path.join(self.models_path, "charsets.json"), 'w', encoding="utf-8") as f:
                             f.write(json.dumps({"charset": self.net.charset, "image": self.resize, "word": self.word, 'channel': self.ImageChannel}, ensure_ascii=False))
                         logger.info("\nExport Finished!Using Time: {}min".format(

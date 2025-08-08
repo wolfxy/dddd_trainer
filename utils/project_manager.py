@@ -28,6 +28,9 @@ class ProjectManager:
             logger.info("Creating Directory... ----> {}".format(checkpoints_path))
             os.mkdir(checkpoints_path)
 
+            imagescache_path = os.path.join(project_base_path, "imagescache")
+            os.mkdir(imagescache_path)
+
             config_path = os.path.join(os.path.join(project_base_path, "config.yaml"))
             logger.info("Creating {} Config File... ----> {}".format("CNN" if single else "CRNN", config_path))
             conf = Config(project_name)

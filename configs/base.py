@@ -1,5 +1,4 @@
 import os
-import json
 import yaml
 
 
@@ -25,6 +24,7 @@ class Config(object):
                 "Word": False
             },
             "Train": {
+                "PRE_MODEL": "",
                 "BATCH_SIZE": 32,
                 "TEST_BATCH_SIZE": 32,
                 'CNN': {

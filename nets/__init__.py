@@ -1,12 +1,9 @@
 import json
-
-from .backbone import *
 import torch
+from .backbone import DdddOcr, effnetv2_l, effnetv2_m, effnetv2_xl, effnetv2_s, mobilenetv2, MobileNetV3_Small, MobileNetV3_Large
 
 torch.set_num_threads(1)
-
 import numpy as np
-
 np.random.seed(0)
 torch.manual_seed(0)
 
@@ -187,7 +184,7 @@ class Net(torch.nn.Module):
     @staticmethod
     def get_device(gpu_id):
         if gpu_id == -1:
-            device = torch.device('cpu'.format(str(gpu_id)))
+            device = torch.device('cpu')
         else:
             device = torch.device('cuda:{}'.format(str(gpu_id)))
         return device
@@ -225,3 +222,23 @@ class Net(torch.nn.Module):
         # self.optimizer.load_state_dict(optimizer)
         # return param['epoch'], param['step'], param['lr']
         return param, state_dict, optimizer
+    
+    def load_pre_model(self, path, device):
+        '''Loading pre model
+        Args:
+            path (_type_): _description_
+            device (_type_): _description_
+        '''
+        # onnx_model = onnx.load(path)
+        # from onnx2torch import convert
+        # pytorch_model = convert(onnx_model)
+        # state_dict = pytorch_model['net']
+        # # optimizer = param['optimizer']
+        # self.load_state_dict(state_dict)
+        param = torch.load(path, map_location=device)
+        state_dict = param['net']
+        state_dict.pop('fc.weight')
+        state_dict.pop('fc.bias')
+        # optimizer = param['optimizer']
+        self.load_state_dict(state_dict, strict=False)
+        # self.load_state_dict(state_dict)

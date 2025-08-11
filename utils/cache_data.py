@@ -96,7 +96,7 @@ class CacheData:
         logger.info("\nWriting Cache Data!")
         del lines
         logger.info("\nCache Data Number is {}".format(len(caches)))
-        logger.info("\nWriting Train and Val File.".format(len(caches)))
+        logger.info("\nWriting Train and Val File.")
         val = self.conf['System']['Val']
         if 0 < val < 1:
             val_num = int(len(caches) * val)

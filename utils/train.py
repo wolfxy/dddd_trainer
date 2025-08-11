@@ -22,6 +22,7 @@ class Train:
         self.config = Config(project_name)
         self.conf = self.config.load_config()
 
+        self.pre_model = self.conf['Train']['PRE_MODEL']
         self.test_step = self.conf['Train']['TEST_STEP']
         self.save_checkpoints_step = self.conf['Train']['SAVE_CHECKPOINTS_STEP']
 
@@ -49,6 +50,7 @@ class Train:
         if len(history_checkpoints) > 0:
             history_step = 0
             newer_checkpoint = None
+            # 找到最后保存的训练数据
             for checkpoint in history_checkpoints:
                 checkpoint_name = checkpoint.split(".")[0].split("_")
                 if int(checkpoint_name[3]) > history_step:
@@ -65,15 +67,24 @@ class Train:
 
         logger.info("\nBuilding Net...")
         self.net = Net(self.conf, self.lr)
+        # 加载预训练模型
         if self.state_dict:
             self.net.load_state_dict(self.state_dict, strict=False)
+        # 如果没有预训练模型，但是有增量模型设置，需要加载增量模型
+        elif self.pre_model != '':
+            self.net.load_pre_model(self.pre_model, self.device)
+            logger.info(f'Load in model: {self.pre_model}')
+
         logger.info(self.net)
         logger.info("\nBuilding End")
         self.net = self.net.to(self.device)
         logger.info("\nGet Data Loader...")
 
+        # 构造数据加载器
         loaders = load_cache.GetLoader(project_name)
+        # 训练数据
         self.train = loaders.loaders['train']
+        # 测试数据
         self.val = loaders.loaders['val']
         del loaders
         logger.info("\nGet Data Loader End!")
@@ -106,8 +117,7 @@ class Train:
                     ))
                     self.net.scheduler.step()
                     self.net.save_model(model_path,
-                                        {"net": self.net.state_dict(), "optimizer": self.net.optimizer.state_dict(),
-                                         "epoch": self.epoch, "step": self.step, "lr": lr})
+                                        {"net": self.net.state_dict(), "optimizer": self.net.optimizer.state_dict(), "epoch": self.epoch, "step": self.step, "lr": lr})
 
                 if self.step % self.test_step == 0:
                     try:
@@ -139,6 +149,10 @@ class Train:
                             self.net.cnn.set_swish(memory_efficient=False)
                         self.net = self.net.eval().cpu()
                         dynamic_ax = {'input1': {3: 'image_wdith'}, "output": {1: 'seq'}}
+
+                        model_path = os.path.join(self.checkpoints_path, "checkpoint_{}_{}_{}.tar".format(self.project_name, self.epoch, self.step))
+                        self.net.save_model(model_path, {"net": self.net.state_dict(), "optimizer": self.net.optimizer.state_dict(), "epoch": self.epoch, "step": self.step, "lr": lr})
+
                         self.net.export_onnx(self.net, dummy_input,
                                              os.path.join(self.models_path, "{}_{}_{}_{}_{}.onnx".format(
                                                  self.project_name, str(accuracy), self.epoch, self.step,

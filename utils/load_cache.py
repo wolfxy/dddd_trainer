@@ -67,7 +67,7 @@ class LoadCache(Dataset):
             else:
                 image = image.resize((width, height))
             label = [int(self.charset.index(item)) for item in list(image_label)]
-            image.save(f'{idx}_{label}_{image_name}')
+            # image.save(f'{idx}_{label}_{image_name}')
             self.data_cache[idx] = (image, label)
             return (image, label)
 

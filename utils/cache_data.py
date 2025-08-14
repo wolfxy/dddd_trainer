@@ -90,7 +90,7 @@ class CacheData:
             labels.insert(0, " ")
         logger.info("\nCoolect labels is {}".format(json.dumps(labels, ensure_ascii=False)))
         self.conf['System']['Path'] = base_path
-        charset = ' 0123456789abcdefjhijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+        charset = ' 0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
         self.conf['Model']['CharSet'] = list(charset)
         self.config.make_config(config_dict=self.conf, single=self.conf['Model']['Word'])
         logger.info("\nWriting Cache Data!")

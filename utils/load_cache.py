@@ -8,13 +8,23 @@ from loguru import logger
 
 import torchvision
 from PIL import Image, ImageFile
-from torch.utils.data import DataLoader, Dataset, TensorDataset
+from torch.utils.data import DataLoader, Dataset, ConcatDataset
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 
 class LoadCache(Dataset):
     def __init__(self, cache_path: str, path: str, word: bool, image_channel: int, resize: list, charset: list):
+        """
+        构建一个数据集
+        Args:
+            cache_path (str): 缓存的索引文件的目录
+            path (str): 图片文件的目录
+            word (bool): _description_
+            image_channel (int): _description_
+            resize (list): _description_
+            charset (list): _description_
+        """
         self.cache_path = cache_path
         '''缓存文件的路径'''
         self.path = path
@@ -141,13 +151,30 @@ class GetLoader:
             self.transform_list.append(torchvision.transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                                                         std=[0.229, 0.224, 0.225]))
         self.transform = torchvision.transforms.Compose(self.transform_list)
-        train_loader = LoadCache(self.cache_train_path, self.path, self.word, self.ImageChannel, self.resize,
-                                 self.charset)
+        train_loader = LoadCache(self.cache_train_path, self.path, self.word, self.ImageChannel, self.resize, self.charset)
         if len(train_loader) < self.batch_size:
             self.batch_size = len(train_loader)
         val_loader = LoadCache(self.cache_val_path, self.path, self.word, self.ImageChannel, self.resize, self.charset)
         if len(val_loader) < self.batch_size:
             self.val_batch_size = len(val_loader)
+        # 处理有没有配置增量数据
+        self.increment_cache_train_path = self.conf['Increment']['CACHE_TRAIN_PATH']
+        logger.info(json.dumps(self.conf['Increment']))
+        if self.increment_cache_train_path != '':
+            logger.info('Loading increment data')
+            self.increment_path = self.conf['Increment']['PATH']
+            self.increment_image_channel = self.conf['Increment']['ImageChannel']
+            self.increment_image_height = self.conf['Increment']['ImageHeight']
+            self.increment_image_width = self.conf['Increment']['ImageWidth']
+            self.increment_Word = self.conf['Increment']['Word']
+            self.increment_resize = [int(self.increment_image_width), int(self.increment_image_height)]
+            increment_train_loader = LoadCache(self.increment_cache_train_path, self.increment_path, self.increment_Word, self.increment_image_channel, self.increment_resize, self.charset)
+            train_loader = ConcatDataset([train_loader, increment_train_loader])
+
+            self.increment_cache_val_path = self.conf['Increment']['CACHE_VAL_PATH']
+            increment_var_loader = LoadCache(self.increment_cache_val_path, self.increment_path, self.increment_Word, self.increment_image_channel, self.increment_resize, self.charset)
+            val_loader = ConcatDataset([val_loader, increment_var_loader])
+        
         self.loaders = {
             'train': DataLoader(dataset=train_loader, batch_size=self.batch_size, shuffle=True, drop_last=True,
                                 num_workers=self.num_workers, collate_fn=self.collate_to_sparse, pin_memory=False),

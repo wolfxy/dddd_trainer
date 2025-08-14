@@ -6,15 +6,15 @@ import os
 m_dir = "E:\\Project\\Lifting\\dddd_trainer\\projects\\vcode_0\\models"
 name = 'vcode_0_1.0_23_6000_2025-07-28-19-47-18.onnx'
 
-m_dir = "E:\\aicode\\vcode"
-name = 'vcode_1.0_23_6000_2025-08-11-18-12-20.onnx'
+m_dir = "E:\\Project\\Lifting\\dddd_trainer\\projects\\vcode2\\models"
+name = 'vcode2_1.0_23_6000_2025-08-14-12-15-47.onnx'
 
 import_onnx_path = os.path.join(m_dir, name)
 charsets_path = os.path.join(m_dir, 'charsets.json')
 ocr = ddddocr.DdddOcr(show_ad=False, import_onnx_path=import_onnx_path, charsets_path=charsets_path)
 
 # image_dir = os.path.join(m_dir, 'image_set')
-image_dir = "E:\\aicode\\vcode_3\\image_set"
+image_dir = "E:\\aicode\\vcode_2\\image_set"
 
 # ocr = ddddocr.DdddOcr(show_ad=False) 
 

@@ -16,7 +16,9 @@ ImageFile.LOAD_TRUNCATED_IMAGES = True
 class LoadCache(Dataset):
     def __init__(self, cache_path: str, path: str, word: bool, image_channel: int, resize: list, charset: list):
         self.cache_path = cache_path
+        '''缓存文件的路径'''
         self.path = path
+        '''图片文件的文件夹路径'''
         self.word = word
         self.ImageChannel = image_channel
         self.resize = resize
@@ -67,7 +69,6 @@ class LoadCache(Dataset):
             else:
                 image = image.resize((width, height))
             label = [int(self.charset.index(item)) for item in list(image_label)]
-            # image.save(f'{idx}_{label}_{image_name}')
             self.data_cache[idx] = (image, label)
             return (image, label)
 

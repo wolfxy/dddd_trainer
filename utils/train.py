@@ -22,7 +22,6 @@ class Train:
         self.config = Config(project_name)
         self.conf = self.config.load_config()
 
-        self.pre_model = self.conf['Train']['PRE_MODEL']
         self.test_step = self.conf['Train']['TEST_STEP']
         self.save_checkpoints_step = self.conf['Train']['SAVE_CHECKPOINTS_STEP']
 
@@ -71,9 +70,9 @@ class Train:
         if self.state_dict:
             self.net.load_state_dict(self.state_dict, strict=False)
         # 如果没有预训练模型，但是有增量模型设置，需要加载增量模型
-        elif self.pre_model != '':
-            self.net.load_pre_model(self.pre_model, self.device)
-            logger.info(f'Load in model: {self.pre_model}')
+        # elif self.pre_model != '':
+        #     self.net.load_pre_model(self.pre_model, self.device)
+        #     logger.info(f'Load pre model: {self.pre_model}')
 
         logger.info(self.net)
         logger.info("\nBuilding End")
@@ -148,7 +147,7 @@ class Train:
                         if self.net.backbone.startswith("effnet"):
                             self.net.cnn.set_swish(memory_efficient=False)
                         self.net = self.net.eval().cpu()
-                        dynamic_ax = {'input1': {3: 'image_wdith'}, "output": {1: 'seq'}}
+                        dynamic_ax = {'input1': {3: 'image_width'}, "output": {1: 'seq'}}
 
                         model_path = os.path.join(self.checkpoints_path, "checkpoint_{}_{}_{}.tar".format(self.project_name, self.epoch, self.step))
                         self.net.save_model(model_path, {"net": self.net.state_dict(), "optimizer": self.net.optimizer.state_dict(), "epoch": self.epoch, "step": self.step, "lr": lr})

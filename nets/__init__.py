@@ -2,7 +2,7 @@ import json
 import torch
 from .backbone import DdddOcr, effnetv2_l, effnetv2_m, effnetv2_xl, effnetv2_s, mobilenetv2, MobileNetV3_Small, MobileNetV3_Large
 
-torch.set_num_threads(1)
+torch.set_num_threads(4)
 import numpy as np
 np.random.seed(0)
 torch.manual_seed(0)
@@ -49,18 +49,15 @@ class Net(torch.nn.Module):
                 self.out_size = test_features.size()[1] * test_features.size()[2]
             self.cnn = self.backbones_list[self.backbone](nc=self.image_channel)
         else:
-            raise Exception("{} is not found in backbones! backbone list : {}".format(self.backbone, json.dumps(
-                list(self.backbones_list.keys()))))
+            raise Exception("{} is not found in backbones! backbone list : {}".format(self.backbone, json.dumps(list(self.backbones_list.keys()))))
         self.paramters.append({'params': self.cnn.parameters()})
+        
         if not self.word:
             self.dropout = self.conf['Train']['DROPOUT']
-            self.lstm = torch.nn.LSTM(input_size=self.out_size, hidden_size=self.out_size, bidirectional=True,
-                                      num_layers=1, dropout=self.dropout)
+            self.lstm = torch.nn.LSTM(input_size=self.out_size, hidden_size=self.out_size, bidirectional=True, num_layers=1, dropout=self.dropout)
             self.paramters.append({'params': self.lstm.parameters()})
-
             self.loss = torch.nn.CTCLoss(blank=0, reduction='mean')
             self.fc = torch.nn.Linear(in_features=self.out_size * 2, out_features=self.charset_len)
-
         else:
             self.lstm = None
             self.loss = torch.nn.CrossEntropyLoss()
@@ -82,8 +79,7 @@ class Net(torch.nn.Module):
             else:
                 self.optimizer = self.optimizers_list[self.optim](self.paramters, lr=self.lr, betas=(0.9, 0.99))
         else:
-            raise Exception("{} is not found in optimizers! optimizers list : {}".format(self.optim, json.dumps(
-                list(self.optimizers_list.keys()))))
+            raise Exception("{} is not found in optimizers! optimizers list : {}".format(self.optim, json.dumps(list(self.optimizers_list.keys()))))
 
         self.scheduler = torch.optim.lr_scheduler.ExponentialLR(self.optimizer, gamma=0.98)
 
@@ -223,22 +219,27 @@ class Net(torch.nn.Module):
         # return param['epoch'], param['step'], param['lr']
         return param, state_dict, optimizer
     
-    def load_pre_model(self, path, device):
-        '''Loading pre model
-        Args:
-            path (_type_): _description_
-            device (_type_): _description_
-        '''
-        # onnx_model = onnx.load(path)
-        # from onnx2torch import convert
-        # pytorch_model = convert(onnx_model)
-        # state_dict = pytorch_model['net']
-        # # optimizer = param['optimizer']
-        # self.load_state_dict(state_dict)
-        param = torch.load(path, map_location=device)
-        state_dict = param['net']
-        state_dict.pop('fc.weight')
-        state_dict.pop('fc.bias')
-        # optimizer = param['optimizer']
-        self.load_state_dict(state_dict, strict=False)
-        # self.load_state_dict(state_dict)
+    # def load_pre_model(self, path, device):
+    #     '''Loading pre model
+    #     Args:
+    #         path (_type_): _description_
+    #         device (_type_): _description_
+    #     '''
+    #     # onnx_model = onnx.load(path)
+    #     # from onnx2torch import convert
+    #     # pytorch_model = convert(onnx_model)
+    #     # state_dict = pytorch_model['net']
+    #     # # optimizer = param['optimizer']
+    #     # self.load_state_dict(state_dict)
+    #     param = torch.load(path, map_location=device)
+    #     state_dict = param['net']
+    #     state_dict.pop('fc.weight')
+    #     state_dict.pop('fc.bias')
+    #     # optimizer = param['optimizer']
+    #     new_model_dict = self.state_dict()
+    #     new_model_dict.update(state_dict)
+    #     self.load_state_dict(new_model_dict)
+    #     # self.load_state_dict(state_dict)
+    #     import torch.nn as nn
+    #     nn.init.xavier_uniform(self.fc2.weight)
+    #     nn.init.zeros_(self.fc2.bias)

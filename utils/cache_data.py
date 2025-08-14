@@ -11,8 +11,7 @@ from loguru import logger
 class CacheData:
     def __init__(self, project_name: str):
         self.project_name = project_name
-        self.project_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "projects",
-                                         project_name)
+        self.project_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "projects", project_name)
         if os.path.exists(self.project_path):
             self.cache_path = os.path.join(self.project_path, "cache")
         else:
@@ -91,7 +90,8 @@ class CacheData:
             labels.insert(0, " ")
         logger.info("\nCoolect labels is {}".format(json.dumps(labels, ensure_ascii=False)))
         self.conf['System']['Path'] = base_path
-        self.conf['Model']['CharSet'] = labels
+        charset = ' 0123456789abcdefjhijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+        self.conf['Model']['CharSet'] = list(charset)
         self.config.make_config(config_dict=self.conf, single=self.conf['Model']['Word'])
         logger.info("\nWriting Cache Data!")
         del lines

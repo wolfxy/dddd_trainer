@@ -42,14 +42,15 @@ class Config(object):
                 "NUM_WORKERS": 0
             },
             "Increment": {
-                "CACHE_TRAIN_PATH": '',
-                "CACHE_VAL_PATH": '',
-                "PATH": '',
+                "CharSet": [],
+                "CACHE_TRAIN_PATH": "",
+                "CACHE_VAL_PATH": "",
+                "PATH": "",
                 "ImageChannel": 1,
                 "ImageHeight": 64,
                 "ImageWidth": -1,
                 "Word": False
-            }
+            },
         }
 
     def make_config(self, config_dict=None, single: bool = False):
